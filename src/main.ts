@@ -8,7 +8,11 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(useragent.express());
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:4200'],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   app.setGlobalPrefix('api', { exclude: ['/:alias'] });
 
   app.useGlobalPipes(
@@ -20,7 +24,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('API - Acortador de URLs')
-    .setDescription('Documentación de los endpoints para el sistema de acortador y analíticas.')
+    .setDescription(
+      'Documentación de los endpoints para el sistema de acortador y analíticas.',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();

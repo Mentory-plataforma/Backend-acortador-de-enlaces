@@ -19,7 +19,6 @@ export class AnalyticsController {
   async getStats(@Param('alias') alias: string, @Req() req: any) {
     const data = await this.analyticsService.getStats(alias, req.user.userId);
     if (!data) {
-      // Diferenciamos entre no encontrado y no permitido
       const exists = await this.analyticsService.checkExists(alias);
       if (!exists) throw new NotFoundException('Enlace no encontrado');
       throw new ForbiddenException('No tienes permiso para ver estas estadísticas');
