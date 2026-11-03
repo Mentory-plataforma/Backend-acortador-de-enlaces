@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { RequestMethod, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import * as useragent from 'express-useragent';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -10,10 +10,18 @@ async function bootstrap() {
   app.use(useragent.express());
   app.enableCors({
     origin: ['http://localhost:4200'],
+      //origin: ['*'],
+
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
-  app.setGlobalPrefix('api', { exclude: ['/:alias'] });
+  app.setGlobalPrefix('api', {
+    exclude: [
+      { path: 'links', method: RequestMethod.GET },
+      { path: 'links', method: RequestMethod.POST },
+      '/:alias',
+    ],
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({
