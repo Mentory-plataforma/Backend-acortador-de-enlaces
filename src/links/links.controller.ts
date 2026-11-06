@@ -29,7 +29,7 @@ export class LinksController {
   }
 
   @Put(':alias')
-  @ApiOperation({ summary: 'Actualizar la URL de un enlace mediante su alias' })
+  @ApiOperation({ summary: 'Actualizar la URL o el alias de un enlace mediante su alias' })
   @ApiParam({ name: 'alias', description: 'Alias del enlace a actualizar' })
   @ApiResponse({ status: 200, description: 'Enlace actualizado.' })
   @ApiResponse({ status: 403, description: 'Enlace no encontrado o sin permisos.' })
@@ -43,8 +43,10 @@ export class LinksController {
   @ApiParam({ name: 'alias', description: 'Alias del enlace a desactivar' })
   @ApiResponse({ status: 200, description: 'Enlace desactivado exitosamente.' })
   @ApiResponse({ status: 403, description: 'Enlace no encontrado o sin permisos.' })
-  async delete(@Param('alias') alias: string, @Req() req: any) {
-    const data = await this.linksService.delete(alias, req.user.userId);
+  @ApiResponse({ status: 404, description: 'Enlace desactivado.' })
+
+  async deactivate(@Param('alias') alias: string, @Req() req: any) {
+    const data = await this.linksService.deactivate(alias, req.user.userId);
     return { success: true, data };
   }
 }

@@ -39,24 +39,30 @@ export class LinksService {
   }
 
   async update(alias: string, dto: UpdateLinkDto, userId: string) {
-    const result = await this.db.query(
-      'UPDATE links SET url = $1, updated_at = CURRENT_TIMESTAMP WHERE alias = $2 AND user_id = $3 RETURNING *',
-      [dto.url, alias, userId]
-    );
+    let result;
+    try {
+      result = await this.db.query(
+        `UPDATE links SET
+           url = COALESCE($1, url),
+           alias = COALESCE($2, alias),
+           activo = COALESCE($3, activo),
+           updated_at = CURRENT_TIMESTAMP
+         WHERE alias = $4 AND user_id = $5 RETURNING *`,
+        [dto.url ?? null, dto.alias ?? null, dto.activo ?? null, alias, userId]
+      );
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('El alias ya está en uso');
+      }
+      throw error;
+    }
     if (result.length === 0) {
       throw new ForbiddenException('Enlace no encontrado o no tienes permiso para editarlo');
     }
     return result[0];
   }
 
-  async delete(alias: string, userId: string) {
-    const result = await this.db.query(
-      'UPDATE links SET activo = false WHERE alias = $1 AND user_id = $2 RETURNING *',
-      [alias, userId]
-    );
-    if (result.length === 0) {
-      throw new ForbiddenException('Enlace no encontrado o no tienes permiso para eliminarlo');
-    }
-    return { success: true };
+  async deactivate(alias: string, userId: string) {
+    return this.update(alias, { activo: false }, userId);
   }
 }
