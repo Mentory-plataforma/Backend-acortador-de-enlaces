@@ -8,6 +8,45 @@ import { RedirectService } from './redirect.service';
 export class RedirectController {
   constructor(private readonly redirectService: RedirectService) {}
 
+  @Get('/setcookie')
+    @ApiOperation({summary: 'Endpoint de Prueba Para mandar cookie al navegador del Cliente'})
+    async setcookie(@Res({passthrough: true}) response: Response) {
+      const sessionid = crypto.randomUUID();
+      // Checkpoint de que entra a la ruta
+      console.log('Ruta Hecha');
+
+      response.cookie('prueba', sessionid, {httpOnly: true});
+
+      return 'Cookie Enviada'
+    }
+
+  @Get('/readcookie')
+  @ApiOperation({summary: 'Endpoint de Prueba para Consultar Cookies Creadas en el navegador'})
+  async leocookie(@Req() request: Request) {
+    console.log('Leo Cookie');
+
+    let cookie = request.cookies['prueba'];
+
+    let cookie2 = request.cookies['Cookie'];
+
+    let cookieall = request.cookies;
+
+    // Valido existencia de cadena/cookie
+    if(cookieall.VALUES === ''){
+      return 'No hay una Cookie asignada';
+    }
+
+    return 'Cookies  Leida: 1. ' + cookie + '2. '+ cookie2;
+  }
+
+  @Get('Clearcookie')
+  @ApiOperation({ summary : 'Endpoint de Prueba para limpiar las cookies del navegador ya definidas al usuario'})
+  async limpiocookie(@Res({passthrough: true}) res: Response) {
+    console.log('Cookie Limpiada');
+    res.clearCookie('prueba');
+    return 'Cookie Limpiada'
+  }
+
   @Get(':alias')
   @ApiOperation({ summary: 'Redirección de alias a URL original' })
   @ApiParam({ name: 'alias', description: 'Alias del enlace a redirigir' })
