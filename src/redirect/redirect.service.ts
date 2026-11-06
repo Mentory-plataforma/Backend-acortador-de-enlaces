@@ -14,8 +14,9 @@ export class RedirectService {
   }
 
   async logVisit(visitData: {
+    DeviceId: string,
     linkId: string;
-    ip: string;
+    ip: string; // Aplicar Hash
     browser: string;
     os: string;
     device: string;
