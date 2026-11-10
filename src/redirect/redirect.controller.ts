@@ -78,19 +78,27 @@ export class RedirectController {
         path: '/',
       });
     }
+    const ip = req.ip || 'Unknown';
+    const { pais, estado, region } =
+      await this.redirectService.getIpGeolocation(ip);
 
-    const visitData = {
+    const visitData: Parameters<RedirectService['logVisit']>[0] = {
       // Se manda campo de id único al servicio de registros de visitantes.
-      DeviceId: deviceId,
       linkId: link.id,
-      ip: req.ip || 'Unknown',
+      token: deviceId,
+      // Se conserva el encabezado user-agent original tal como llegó.
+      userAgent: req.get('user-agent') || 'Unknown',
+      ip,
+      pais,
+      estado,
       browser: req.useragent?.browser || 'Unknown',
       os: req.useragent?.os || 'Unknown',
       device: req.useragent?.isMobile ? 'Mobile' : 'Desktop',
       referrer: req.get('referer') || 'Direct',
+      region,
     };
 
-    this.redirectService.logVisit(visitData);
+    await this.redirectService.logVisit(visitData);
 
     return res.redirect(302, link.url);
   }

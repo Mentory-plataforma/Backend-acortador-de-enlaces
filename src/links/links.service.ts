@@ -30,7 +30,7 @@ export class LinksService {
     const result = await this.db.query(
       `SELECT l.*, COUNT(v.id) AS total_clicks 
        FROM links l 
-       LEFT JOIN visits v ON l.id = v.link_id 
+       LEFT JOIN visitas v ON l.id = v.link_id
        WHERE l.activo = true AND l.user_id = $1
        GROUP BY l.id`,
       [userId]

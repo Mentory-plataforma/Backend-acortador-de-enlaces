@@ -20,18 +20,18 @@ export class AnalyticsService {
     const linkId = link[0].id;
 
     const [totalVisits, uniqueVisitors, browsers, os, recentVisits] = await Promise.all([
-      this.db.query('SELECT COUNT(*) as count FROM visits WHERE link_id = $1', [linkId]),
-      this.db.query('SELECT COUNT(DISTINCT ip) as count FROM visits WHERE link_id = $1', [linkId]),
+      this.db.query('SELECT COUNT(*) as count FROM visitas WHERE link_id = $1', [linkId]),
+      this.db.query('SELECT COUNT(DISTINCT token) as count FROM visitas WHERE link_id = $1', [linkId]),
       this.db.query(
-        'SELECT browser, COUNT(*) as count FROM visits WHERE link_id = $1 GROUP BY browser ORDER BY count DESC LIMIT 5',
+        'SELECT browser, COUNT(*) as count FROM visitas WHERE link_id = $1 GROUP BY browser ORDER BY count DESC LIMIT 5',
         [linkId]
       ),
       this.db.query(
-        'SELECT os, COUNT(*) as count FROM visits WHERE link_id = $1 GROUP BY os ORDER BY count DESC LIMIT 5',
+        'SELECT os, COUNT(*) as count FROM visitas WHERE link_id = $1 GROUP BY os ORDER BY count DESC LIMIT 5',
         [linkId]
       ),
       this.db.query(
-        'SELECT * FROM visits WHERE link_id = $1 ORDER BY created_at DESC LIMIT 10',
+        'SELECT * FROM visitas WHERE link_id = $1 ORDER BY created_at DESC LIMIT 10',
         [linkId]
       ),
     ]);
