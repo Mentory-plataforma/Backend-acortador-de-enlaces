@@ -34,3 +34,22 @@ CREATE TABLE IF NOT EXISTS visits (
 );
 
 CREATE INDEX IF NOT EXISTS idx_visits_link_id ON visits(link_id);
+
+CREATE TABLE IF NOT EXISTS visitas (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    link_id UUID NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+    token VARCHAR(70),
+    user_agent TEXT,
+    ip VARCHAR(45),
+    pais VARCHAR(60),
+    estado VARCHAR(50),
+    browser VARCHAR(50),
+    os VARCHAR(50),
+    device VARCHAR(50),
+    referrer TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    region VARCHAR(20)
+);
+
+CREATE INDEX IF NOT EXISTS idx_visitas_link_id ON visitas(link_id);
+CREATE INDEX IF NOT EXISTS idx_visitas_link_created_at ON visitas(link_id, created_at DESC);
